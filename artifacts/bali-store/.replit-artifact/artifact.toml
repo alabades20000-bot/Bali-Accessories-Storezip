@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Bali Accessories Store"
+description = "A polished Arabic-first accessories storefront for browsing mobile accessories, comparing products, and completing purchases with a warm Bali-inspired visual identity."
+version = "1.0.0"
+id = "artifacts/bali-store"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18250
+
+[services.development]
+run = "pnpm --filter @workspace/bali-store run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bali-store", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/bali-store/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18250"
+BASE_PATH = "/"

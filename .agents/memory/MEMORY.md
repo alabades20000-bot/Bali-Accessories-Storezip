@@ -1,0 +1,1 @@
+- [Imported Lovable apps](lovable-vite-imports.md) — TanStack Start storefront exports need a CSR-safe Vite adapter and their original public Supabase configuration to render locally.
