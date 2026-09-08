@@ -40,7 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user.email.toLowerCase().startsWith("admin@")),
   );
 
-  const isAdmin = isSuperAdminEmail || roleIsAdmin;
+  // البريد نفسه مستخدم لحساب الجملة، لذلك لا يكفي البريد وحده لتحديد المدير.
+  // جلسة صاحب المحل المحلية تمنع ظهور أي صلاحيات أو أدوات إدارة.
+  const isAdmin = !isMerchant && (isSuperAdminEmail || roleIsAdmin);
 
   const loadLocalSession = (): boolean => {
     try {
@@ -287,8 +289,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(ADMIN_STORAGE_KEY);
     localStorage.setItem(MERCHANT_STORAGE_KEY, JSON.stringify(merchantData));
 
+    // إلغاء أي جلسة Supabase قديمة حتى لا تستبدل جلسة الجملة المحلية
+    // وتعيد تفعيل صلاحيات المدير بسبب استخدام البريد نفسه.
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      /* ignore */
+    }
+
     const mockUser = {
-      id: "merchant-custom",
+      id: "merchant-ali-wholesale",
       email: WHOLESALE_EMAIL,
       user_metadata: { name: "صاحب محل معتمد", shop_name: "محل معتمد" },
       aud: "authenticated",
