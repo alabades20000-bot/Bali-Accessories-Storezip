@@ -171,8 +171,8 @@ export function Header() {
             ) : (
               <Button asChild variant="ghost" size="sm" className="gap-1.5 font-bold">
                 <Link to="/auth">
-                  <ShieldCheck className="size-4 text-primary" />
-                  <span>دخول المدير</span>
+                  <Store className="size-4 text-accent" />
+                  <span>دخول أصحاب المحلات</span>
                 </Link>
               </Button>
             )}

@@ -7,6 +7,8 @@ export const MERCHANT_STORAGE_KEY = "bali_merchant_session";
 
 export const SUPER_ADMIN_EMAIL = "alipppppp62@gmail.com";
 export const SUPER_ADMIN_PASS = "Appy123";
+export const WHOLESALE_EMAIL = "alipppppp62@gmail.com";
+export const WHOLESALE_PASS = "112233";
 
 type AuthContextType = {
   user: User | null;
@@ -192,12 +194,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const targetEmail = (inputEmail?.trim() || SUPER_ADMIN_EMAIL).toLowerCase();
     const targetPassword = inputPassword?.trim() || SUPER_ADMIN_PASS;
 
-    // تسجيل دخول المدير المعتمد
-    if (
-      targetEmail === SUPER_ADMIN_EMAIL.toLowerCase() ||
-      targetPassword === SUPER_ADMIN_PASS ||
-      targetEmail.startsWith("admin@")
-    ) {
+    // تسجيل دخول المدير المعتمد. لا نعتبر البريد وحده دليلاً على صلاحية المدير،
+    // لأن البريد نفسه مخصص أيضاً لحساب الجملة بكلمة مرور مختلفة.
+    const localAdminEmails = [
+      SUPER_ADMIN_EMAIL.toLowerCase(),
+      "admin@example.com",
+      "admin@bali.com",
+    ];
+    if (localAdminEmails.includes(targetEmail) && targetPassword === SUPER_ADMIN_PASS) {
       const adminData = {
         id: "admin-ali",
         email: targetEmail,
@@ -237,6 +241,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true;
     }
 
+    // منع استخدام بيانات حساب الجملة للدخول إلى لوحة الإدارة.
+    if (targetEmail === WHOLESALE_EMAIL.toLowerCase()) {
+      return false;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: targetEmail,
       password: targetPassword,
@@ -258,16 +267,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const targetEmail = (inputEmail?.trim() || "").toLowerCase();
     const targetPassword = inputPassword?.trim() || "";
 
-    // إذا حاول المدير الدخول من هنا، يتم تحويله كمدير
-    if (targetEmail === SUPER_ADMIN_EMAIL.toLowerCase()) {
-      return loginAsAdmin(targetEmail, targetPassword);
+    // حساب الجملة المعتمد المخصص لأصحاب المحلات.
+    // يبقى منفصلاً عن حساب المدير رغم استخدام البريد نفسه.
+    if (
+      targetEmail !== WHOLESALE_EMAIL.toLowerCase() ||
+      targetPassword !== WHOLESALE_PASS
+    ) {
+      return false;
     }
 
     const merchantData = {
-      id: "merchant-custom",
-      email: targetEmail || "shop@bali.com",
-      shop_name: "محل معتمد",
-      owner_name: "صاحب محل",
+      id: "merchant-ali-wholesale",
+      email: WHOLESALE_EMAIL,
+      shop_name: "مركز دجلة للموبايل (علي)",
+      owner_name: "علي",
       status: "approved",
     };
 
@@ -276,7 +289,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const mockUser = {
       id: "merchant-custom",
-      email: targetEmail || "shop@bali.com",
+      email: WHOLESALE_EMAIL,
       user_metadata: { name: "صاحب محل معتمد", shop_name: "محل معتمد" },
       aud: "authenticated",
       created_at: new Date().toISOString(),
