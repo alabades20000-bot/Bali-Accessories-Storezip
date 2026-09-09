@@ -1,44 +1,53 @@
-# [Project name]
+# Bali Accessories Store
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Arabic-first mobile accessories storefront with a Bali-inspired visual identity,
+an Express API, and a component preview sandbox.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm install --frozen-lockfile` — install the workspace dependencies
+- `pnpm --filter @workspace/bali-store run dev` — run the storefront
+- `pnpm --filter @workspace/api-server run dev` — run the API server
+- `pnpm --filter @workspace/mockup-sandbox run dev` — run the component preview sandbox
 - `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `PORT=18250 BASE_PATH=/ pnpm --filter @workspace/bali-store run build` — build the storefront
+- `pnpm --filter @workspace/api-server run build` — build the API server
+- Storefront workflow environment: `PORT=18250`, `BASE_PATH=/`
+- API server listens on the workflow-provided `PORT` and exposes `/api/healthz`
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React, Vite, TanStack Router/Start compatibility layer, Tailwind CSS
+- API: Express 5 with esbuild
+- Data integrations: Supabase client and shared workspace libraries
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/bali-store/` — storefront source and Vite configuration
+- `artifacts/api-server/` — Express API source and build configuration
+- `artifacts/mockup-sandbox/` — component preview source
+- `artifacts/*/.replit-artifact/artifact.toml` — artifact paths, ports, and workflow settings
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The existing pnpm workspace and artifact structure are preserved.
+- The storefront uses `/` as its preview base path.
+- The API is routed through `/api` and provides `/api/healthz` for health checks.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Users can browse mobile accessories, search products, explore categories, and use
+cart and promotion flows through an Arabic-first storefront.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+No project-specific preferences recorded.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The storefront Vite config requires both `PORT` and `BASE_PATH`; artifact workflows provide them automatically.
+- Run production builds with those variables set when invoking them manually.
 
 ## Pointers
 
